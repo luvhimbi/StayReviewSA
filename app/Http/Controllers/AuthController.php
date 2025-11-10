@@ -34,7 +34,7 @@ class AuthController extends Controller
             'role' => 'user'
         ]);
 
-        event(new Registered($user)); // sends verification email automatically
+//        event(new Registered($user));
 
         return redirect()->route('login')->with('success', 'Registration successful! Please check your email to verify your account.');
     }

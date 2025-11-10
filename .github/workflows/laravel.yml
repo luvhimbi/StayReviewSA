@@ -52,6 +52,22 @@ jobs:
           path: node_modules
           key: npm-${{ hashFiles('package-lock.json') }}
 
+      # Copy .env for testing
+      - name: Copy .env for testing
+        run: cp .env.example .env
+
+      # Generate application key
+      - name: Generate app key
+        run: php artisan key:generate
+
+      # Run migrations
+      - name: Run migrations
+        run: php artisan migrate --env=testing --no-interaction
+
+      # Run backend tests (PHPUnit)
+      - name: Run PHPUnit tests
+        run: php artisan test --env=testing --verbose
+
       # Optional: Add a success message
       - name: Build Complete
         run: echo "Build completed successfully!"
