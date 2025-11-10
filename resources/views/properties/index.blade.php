@@ -3,7 +3,7 @@
 @section('title', 'All Properties')
 
 @section('content')
-    <div class="max-w-7xl mt-10 ">
+    <div class="max-w-7xl mt-5 ">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl font-bold text-blue-600 flex items-center gap-2">
                 <i class="bi bi-building"></i> All Properties
@@ -23,9 +23,6 @@
                     <th class="px-4 py-3">Property Name</th>
                     <th class="px-4 py-3">Poster</th>
                     <th class="px-4 py-3">Address</th>
-                    <th class="px-4 py-3">City</th>
-                    <th class="px-4 py-3">State</th>
-                    <th class="px-4 py-3">Country</th>
                     <th class="px-4 py-3">Type</th>
                     <th class="px-4 py-3">Approved</th>
                     <th class="px-4 py-3">Verified</th>
@@ -44,10 +41,7 @@
                                 <span class="text-gray-400 italic">N/A</span>
                             @endif
                         </td>
-                        <td class="px-4 py-3">{{ $property->address }}</td>
-                        <td class="px-4 py-3">{{ $property->city }}</td>
-                        <td class="px-4 py-3">{{ $property->state }}</td>
-                        <td class="px-4 py-3">{{ $property->country }}</td>
+                        <td class="px-4 py-3">{{ $property->address }},{{ $property->city }},{{ $property->state }},{{ $property->country }}</td>
                         <td class="px-4 py-3">{{ ucfirst($property->property_type) }}</td>
                         <td class="px-4 py-3">
                             @if($property->approved)
