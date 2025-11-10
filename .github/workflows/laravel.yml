@@ -64,8 +64,11 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --env=testing --no-interaction
 
-      - name: Run PHPUnit
-        run: ./vendor/bin/phpunit --testsuite=Feature
+      - name: Regenerate Autoloader
+        run: composer dump-autoload
+
+      - name: Run Laravel tests
+        run: php artisan test --env=testing --verbose
 
       # Optional: Add a success message
       - name: Build Complete
