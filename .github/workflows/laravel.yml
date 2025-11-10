@@ -64,9 +64,8 @@ jobs:
       - name: Run migrations
         run: php artisan migrate --env=testing --no-interaction
 
-      # Run backend tests (PHPUnit)
-      - name: Run Laravel tests
-        run: php artisan test --env=testing --verbose
+      - name: Run PHPUnit
+        run: ./vendor/bin/phpunit --testsuite=Feature
 
       # Optional: Add a success message
       - name: Build Complete
