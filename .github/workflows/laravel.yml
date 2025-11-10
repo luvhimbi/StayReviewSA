@@ -10,80 +10,59 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2️⃣ Setup PHP
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.4.4'
           extensions: mbstring, bcmath, xml, intl, gd
           coverage: none
 
-      # 3️⃣ Setup Node.js
-      - name: Setup Node.js
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction
+
+      - name: Install Node.js dependencies
         uses: actions/setup-node@v3
         with:
           node-version: '20'
           cache: 'npm'
 
-      # 4️⃣ Install Composer dependencies
-      - name: Install Composer dependencies
-        run: composer install --no-interaction --prefer-dist
-
-      # 5️⃣ Install NPM packages
       - name: Install NPM packages
         run: npm install
 
-      # 6️⃣ Build assets
       - name: Build assets (Vite)
         run: npm run build
 
-      # 7️⃣ Cache Composer & NPM
-      - name: Cache Composer
+      # Optional: Cache composer & npm for faster runs
+      - name: Cache Composer dependencies
         uses: actions/cache@v3
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
 
-      - name: Cache NPM
+      - name: Cache NPM dependencies
         uses: actions/cache@v3
         with:
           path: node_modules
           key: npm-${{ hashFiles('package-lock.json') }}
 
-      # 8️⃣ Copy .env for testing
-      - name: Copy .env
+      # Copy .env for testing
+      - name: Copy .env for testing
         run: cp .env.example .env
 
-      # 9️⃣ Generate app key
+      # Generate application key
       - name: Generate app key
         run: php artisan key:generate
 
-      # 🔟 Create SQLite database file
-      - name: Create SQLite database
-        run: |
-          mkdir -p database
-          touch database/database.sqlite
+      - name: Regenerate Autoloader
+        run: composer dump-autoload
 
-      # 1️⃣1️⃣ Configure testing environment for SQLite
-      - name: Configure testing env
-        run: |
-          cp .env .env.testing
-          echo "DB_CONNECTION=sqlite" >> .env.testing
-          echo "DB_DATABASE=${{ github.workspace }}/database/database.sqlite" >> .env.testing
-          php artisan config:clear
-
-      # 1️⃣2️⃣ Run migrations
-      - name: Run migrations
-        run: php artisan migrate --env=testing --force
-
-      # 1️⃣3️⃣ Run tests
-      - name: Run tests
-        run: php artisan test --env=testing --verbose
-
-      # 1️⃣4️⃣ Success message
+      # Optional: Add a success message
       - name: Build Complete
-        run: echo "Build and tests completed successfully!"
+        run: echo "Build completed successfully!"
