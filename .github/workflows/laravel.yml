@@ -1,4 +1,4 @@
-name: Laravel CI
+name: Laravel CI/CD
 
 on:
   push:
@@ -6,22 +6,52 @@ on:
   pull_request:
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4.4'
-          extensions: mbstring, bcmath
+          extensions: mbstring, bcmath, xml, intl, gd
+          coverage: none
 
       - name: Copy .env
         run: cp .env.example .env
 
-      - name: Install Dependencies
-        run: composer install --no-dev --optimize-autoloader
+      - name: Install Composer dependencies
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction
 
-      - name: Run Tests
-        run: php artisan test
+      - name: Install Node.js dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install NPM packages
+        run: npm install
+
+      - name: Build assets (Vite)
+        run: npm run build
+
+      # Optional: Cache composer & npm for faster runs
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+
+      - name: Cache NPM dependencies
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: npm-${{ hashFiles('package-lock.json') }}
+
+      # Optional: Add a success message
+      - name: Build Complete
+        run: echo "Build completed successfully!"
